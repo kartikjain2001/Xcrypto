@@ -110,17 +110,47 @@ const CoinDetails = () => {
             <CustomBar
               high={`${currencySymbol}${coin.market_data.high_24h[currency]}`}
               low={`${currencySymbol}${coin.market_data.low_24h[currency]}`}
+              totalPrice={
+                (coin.market_data.current_price[currency] /
+                  coin.market_data.high_24h[currency]) *
+                100
+              }
             />
+            <Box w={"full"} p="4">
+              <Item title={"Max Supply"} value={coin.market_data.max_supply} />
+              <Item
+                title={"Circulating Supply"}
+                value={coin.market_data.circulating_supply}
+              />
+              <Item
+                title={"Market Cap"}
+                value={`${currencySymbol}${coin.market_data.market_cap[currency]}`}
+              />
+              <Item
+                title={"All Time Low"}
+                value={`${currencySymbol}${coin.market_data.atl[currency]}`}
+              />
+              <Item
+                title={"All Time High"}
+                value={`${currencySymbol}${coin.market_data.ath[currency]}`}
+              />
+            </Box>
           </VStack>
         </>
       )}
     </Container>
   );
 };
+const Item = ({ title, value }) => (
+  <HStack justifyContent={"space-between"} w={"full"} my={"4"}>
+    <Text letterSpacing={"widest"}>{title}</Text>
+    <Text>{value}</Text>
+  </HStack>
+);
 
-const CustomBar = ({ high, low }) => (
+const CustomBar = ({ high, low, totalPrice }) => (
   <VStack w={"full"}>
-    <Progress value={50} colorScheme={"teal"} w={"full"} />
+    <Progress value={totalPrice} colorScheme={"teal"} w={"full"} />
     <HStack justifyContent={"space-between"} w={"full"}>
       <Badge children={low} colorScheme={"red"} />
       <Text fontSize={"sm"}>24H Range</Text>
