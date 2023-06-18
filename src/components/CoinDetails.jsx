@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Container,
   HStack,
   Image,
@@ -22,13 +23,58 @@ import { server } from "../index";
 
 import ErrorComponent from "./ErrorComponent";
 import Loader from "./Loader";
+import Chart from "./Chart";
 
 const CoinDetails = () => {
   const params = useParams();
+  const btns = ["24h", "7d", "14d", "30d", "60d", "200d", "365d", "max"];
+
+  const switchChartStats = key => {
+    switch (key) {
+      case "24h":
+        setDays("24h");
+
+        break;
+      case "7d":
+        setDays("7d");
+
+        break;
+      case "14d":
+        setDays("14d");
+
+        break;
+      case "30d":
+        setDays("30d");
+
+        break;
+      case "60d":
+        setDays("60d");
+
+        break;
+      case "200d":
+        setDays("200d");
+
+        break;
+      case "365d":
+        setDays("365d");
+
+        break;
+      case "max":
+        setDays("max");
+
+        break;
+      default:
+        setDays("24h");
+
+        break;
+    }
+  };
   const [coin, setCoin] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [currency, setCurrency] = useState("inr");
+  const [days, setDays] = useState("24h");
+  const [chartArray, setChartArray] = useState([]);
   const currencySymbol =
     currency === "inr" ? "₹" : currency === "eur" ? "€" : "$";
 
@@ -36,8 +82,12 @@ const CoinDetails = () => {
     const fetchCoin = async () => {
       try {
         const { data } = await axios.get(`${server}/coins/${params.id}`);
-        console.log(data);
+        const { data: chartData } = await axios.get(
+          `${server}/coins/${params.id}/market_chart?vs_currency=${currency}&days=${days}`
+        );
+
         setCoin(data);
+        setChartArray(chartData.prices);
         setLoading(false);
       } catch (error) {
         setError(true);
@@ -45,7 +95,7 @@ const CoinDetails = () => {
       }
     };
     fetchCoin();
-  }, [params.id]);
+  }, [params.id, currency, days]);
 
   if (error) return <ErrorComponent message={"Error While Fetching Coin"} />;
 
@@ -56,11 +106,16 @@ const CoinDetails = () => {
       ) : (
         <>
           <Box width={"full"} borderWidth={1}>
-            hello
+            <Chart arr={chartArray} currency={currencySymbol} days={days} />
           </Box>
 
-          {/*Button*/}
-
+          <HStack p="4" overflowX={"auto"}>
+            {btns.map(i => (
+              <Button key={i} onClick={() => switchChartStats(i)}>
+                {i}
+              </Button>
+            ))}
+          </HStack>
           <RadioGroup value={currency} onChange={setCurrency} p={"8"}>
             <HStack spacing={"4"}>
               <Radio value={"inr"}>INR</Radio>
