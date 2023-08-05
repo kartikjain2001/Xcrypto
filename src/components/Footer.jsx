@@ -26,11 +26,11 @@ const Footer = () => {
           </Text>
         </VStack>
 
-        <VStack>
+        {/* <VStack>
           <Text>
             <a href="https://github.com/kartikjain2001">About The Developer</a>
           </Text>
-        </VStack>
+        </VStack> */}
       </Stack>
     </Box>
   );
